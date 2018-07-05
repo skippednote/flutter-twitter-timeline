@@ -82,7 +82,7 @@ class TweetCard extends StatelessWidget {
                             child: Row(
                               children: <Widget>[
                                 Icon(
-                                  Icons.refresh,
+                                  Icons.repeat,
                                   color: Colors.grey[500],
                                 ),
                                 Padding(

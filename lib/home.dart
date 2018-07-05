@@ -1,10 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import './new-tweet.dart';
 import './tweet.dart' show Tweet, fakeTweets;
 import './tweet-card.dart' show TweetCard;
 
-class Home extends StatelessWidget {
-  final List<Tweet> tweets = fakeTweets;
+class Home extends StatefulWidget {
+  List<Tweet> get tweets => fakeTweets.reversed.toList();
 
+  @override
+  HomeState createState() {
+    return new HomeState();
+  }
+}
+
+class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -39,18 +49,41 @@ class Home extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           backgroundColor: Color(0xff3399ff),
-          onPressed: null,
+          onPressed: _getData,
         ),
-        body: ListView.builder(
-          itemCount: tweets.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: TweetCard(tweet: tweets[index]),
-              contentPadding: EdgeInsets.all(0.0),
-            );
-          },
+        body: RefreshIndicator(
+          onRefresh: _refresh,
+          child: ListView.builder(
+            itemCount: widget.tweets.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: TweetCard(tweet: widget.tweets[index]),
+                contentPadding: EdgeInsets.all(0.0),
+              );
+            },
+          ),
         ),
       ),
     );
+  }
+
+  Future<Null> _refresh() async {
+    await Future.delayed(Duration(seconds: 2));
+    return null;
+  }
+
+  Future _getData() async {
+    String v = await Navigator.of(context).push(MaterialPageRoute<String>(
+        builder: (BuildContext context) => NewTweet(), fullscreenDialog: true));
+    if (v.length > 0) {
+      print(v);
+      setState(() {
+        fakeTweets.add(Tweet(
+            "Bassam Isamil",
+            "skippednote",
+            "https://pbs.twimg.com/profile_images/971370258568269826/IwP_HL-F_normal.jpg",
+            v));
+      });
+    }
   }
 }
